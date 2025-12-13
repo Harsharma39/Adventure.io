@@ -7,62 +7,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ============ SERVE REACT IN PRODUCTION ============
+// Serve React in production
 if (process.env.NODE_ENV === 'production') {
   const buildPath = path.join(__dirname, '../client/build');
-  
   if (fs.existsSync(buildPath)) {
-    // Serve static files from React build
     app.use(express.static(buildPath));
-    console.log('✅ Serving React build from:', buildPath);
   }
 }
 
-// API endpoints (will still work)
+// API endpoints
 app.get('/api/test', (req, res) => {
-  res.json({ success: true, message: 'API test endpoint' });
+  res.json({ success: true, message: 'API test' });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ success: true, status: 'healthy' });
-});
-
-// Root route - serve React or API info
-app.get('/', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    // In production, React handles this route
-    const buildPath = path.join(__dirname, '../client/build/index.html');
-    if (fs.existsSync(buildPath)) {
-      return res.sendFile(buildPath);
-    }
-  }
-  // Fallback: API info
-  res.json({ 
-    success: true, 
-    message: 'Adventure.io',
-    frontend: process.env.NODE_ENV === 'production' ? 'React should load' : 'Development mode'
-  });
-});
-
-// For client-side routing in React
+// All routes → React
 app.get('*', (req, res) => {
-  if (process.env.NODE_ENV === 'production' && !req.path.startsWith('/api/')) {
-    const buildPath = path.join(__dirname, '../client/build/index.html');
-    if (fs.existsSync(buildPath)) {
-      return res.sendFile(buildPath);
+  if (process.env.NODE_ENV === 'production') {
+    const indexPath = path.join(__dirname, '../client/build/index.html');
+    if (fs.existsSync(indexPath) && !req.path.startsWith('/api/')) {
+      return res.sendFile(indexPath);
     }
   }
-  // API 404 for undefined routes
-  res.status(404).json({ error: 'Not found' });
+  res.json({ success: true, message: 'API' });
 });
 
-// ============ VERCEL EXPORT ============
+// Vercel export
 module.exports = app;
-
-// Local development
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 5001;
-  app.listen(PORT, () => {
-    console.log(`Local: http://localhost:${PORT}`);
-  });
-}
