@@ -1,0 +1,12 @@
+# Replace the entire package.json with correct structure
+cat > package.json << 'EOF'
+{
+  "dependencies": {
+    "emailjs-com": "^3.2.0"
+  },
+  "scripts": {
+    "build": "cd client && npm run build",
+    "start": "cd client && npm run start"
+  }
+}
+EOF

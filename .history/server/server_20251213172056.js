@@ -525,7 +525,7 @@ if (isVercel) {
   module.exports = app;
 } else {
   // Local Development Mode
-  const PORT = process.env.PORT || 3001;
+  const PORT = process.env.PORT || 5001;
   app.listen(PORT, () => {
     console.log(`✅ Server successfully started on port ${PORT}`);
     console.log(`🌐 Open your browser to: http://localhost:${PORT}`);

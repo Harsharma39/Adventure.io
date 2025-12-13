@@ -3,7 +3,7 @@
 const isProduction = window.location.hostname.includes('vercel.app');
 const API_BASE_URL = isProduction 
   ? '/api'  // Relative path for Vercel production
-  : 'http://localhost:3001/api';  // Local development
+  : 'http://localhost:5000/api';  // Local development
 
 console.log(`🌐 API Base URL: ${API_BASE_URL} (${isProduction ? 'Production' : 'Development'})`);
 

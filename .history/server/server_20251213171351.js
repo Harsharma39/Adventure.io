@@ -1,69 +1,26 @@
-// server/server.js - Updated for Vercel deployment
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
 
-// ==================== VERCEL COMPATIBILITY ====================
-const isVercel = process.env.VERCEL === '1';
-const isProduction = process.env.NODE_ENV === 'production';
-
-// CORS Configuration
+// Middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      process.env.FRONTEND_URL,
-      'https://adventure-io.vercel.app',
-      'https://adventure-io-harsharma39.vercel.app',
-      'https://*.vercel.app'
-    ].filter(Boolean); // Remove undefined values
-    
-    if (allowedOrigins.some(allowed => origin === allowed) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      console.log(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200
+  origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+  credentials: true
 }));
 app.use(express.json());
 
-// ==================== MONGODB CONNECTION ====================
+// MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log('✅ MongoDB connected successfully'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
-
-// ==================== SERVE REACT BUILD IN PRODUCTION ====================
-if (isProduction) {
-  console.log('🚀 Running in production mode');
-  const buildPath = path.join(__dirname, '../client/build');
-  
-  // Check if React build exists
-  const fs = require('fs');
-  if (fs.existsSync(buildPath)) {
-    app.use(express.static(buildPath));
-    console.log(`📁 Serving React build from: ${buildPath}`);
-  } else {
-    console.log('⚠️ React build not found. Make sure to run: cd client && npm run build');
-  }
-}
-
-// ==================== YOUR EXISTING CODE ====================
 
 // MongoDB Schemas
 const bookingSchema = new mongoose.Schema({
@@ -128,35 +85,16 @@ const generateBookingId = () => {
 
 // 1. Health Check
 app.get('/', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-  
   res.json({ 
     success: true,
     message: '✅ Adventure.io Backend API is running',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    vercel: isVercel,
-    platform: process.platform,
-    node: process.version,
-    database: dbStatus,
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-    apiBaseUrl: isVercel ? '/api' : `http://localhost:${process.env.PORT || 5000}/api`
+    environment: process.env.NODE_ENV
   });
 });
 
-// 2. Vercel Status Check
-app.get('/api/vercel-status', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Vercel serverless function is working',
-    serverless: true,
-    region: process.env.VERCEL_REGION || 'unknown',
-    lambda: true
-  });
-});
-
-// 3. Test Route
+// 2. Test Route
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
@@ -165,7 +103,7 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// 4. User Registration
+// 3. User Registration
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password, fullName, phone } = req.body;
@@ -216,7 +154,7 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// 5. User Login
+// 4. User Login
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -260,7 +198,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// 6. Create Booking (Protected)
+// 5. Create Booking (Protected)
 app.post('/api/bookings', async (req, res) => {
   try {
     const {
@@ -294,6 +232,12 @@ app.post('/api/bookings', async (req, res) => {
     });
     
     await booking.save();
+    
+    // In a real application, you would:
+    // 1. Process payment (using Stripe, Razorpay, etc.)
+    // 2. Send confirmation email
+    // 3. Send SMS notification
+    // 4. Generate and store ticket PDF
     
     console.log(`🎫 New booking created: ${bookingId}`);
     console.log(`📧 Email to: ${email}`);
@@ -331,7 +275,7 @@ app.post('/api/bookings', async (req, res) => {
   }
 });
 
-// 7. Get All Bookings (Protected - Admin)
+// 6. Get All Bookings (Protected - Admin)
 app.get('/api/bookings', authenticateToken, async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 }).limit(100);
@@ -350,7 +294,7 @@ app.get('/api/bookings', authenticateToken, async (req, res) => {
   }
 });
 
-// 8. Get Booking by ID
+// 7. Get Booking by ID
 app.get('/api/bookings/:bookingId', async (req, res) => {
   try {
     const { bookingId } = req.params;
@@ -371,7 +315,7 @@ app.get('/api/bookings/:bookingId', async (req, res) => {
   }
 });
 
-// 9. Get User's Bookings (Protected)
+// 8. Get User's Bookings (Protected)
 app.get('/api/user/bookings', authenticateToken, async (req, res) => {
   try {
     const userEmail = req.user.email;
@@ -392,7 +336,7 @@ app.get('/api/user/bookings', authenticateToken, async (req, res) => {
   }
 });
 
-// 10. Update Booking Status (Protected - Admin)
+// 9. Update Booking Status (Protected - Admin)
 app.patch('/api/bookings/:bookingId/status', authenticateToken, async (req, res) => {
   try {
     const { bookingId } = req.params;
@@ -423,7 +367,7 @@ app.patch('/api/bookings/:bookingId/status', authenticateToken, async (req, res)
   }
 });
 
-// 11. Analytics Endpoint (Protected - Admin)
+// 10. Analytics Endpoint (Protected - Admin)
 app.get('/api/analytics/dashboard', authenticateToken, async (req, res) => {
   try {
     const totalBookings = await Booking.countDocuments();
@@ -453,7 +397,7 @@ app.get('/api/analytics/dashboard', authenticateToken, async (req, res) => {
   }
 });
 
-// 12. Check Email Availability
+// 11. Check Email Availability
 app.get('/api/auth/check-email/:email', async (req, res) => {
   try {
     const { email } = req.params;
@@ -474,7 +418,7 @@ app.get('/api/auth/check-email/:email', async (req, res) => {
   }
 });
 
-// 13. Health Check with DB
+// 12. Health Check with DB
 app.get('/api/health', async (req, res) => {
   try {
     const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
@@ -518,20 +462,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ==================== VERCEL/LOCAL SERVER START ====================
-if (isVercel) {
-  // Vercel Serverless Mode
-  console.log('☁️ Running on Vercel Serverless Functions');
-  module.exports = app;
-} else {
-  // Local Development Mode
-  const PORT = process.env.PORT || 3001;
-  app.listen(PORT, () => {
-    console.log(`✅ Server successfully started on port ${PORT}`);
-    console.log(`🌐 Open your browser to: http://localhost:${PORT}`);
-    console.log(`📡 API Base URL: http://localhost:${PORT}/api`);
-    console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
-    console.log(`⚡ Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📁 Working directory: ${__dirname}`);
-  });
-}
+// Start Server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Server successfully started on port ${PORT}`);
+  console.log(`🌐 Open your browser to: http://localhost:${PORT}`);
+  console.log(`📡 API Base URL: http://localhost:${PORT}/api`);
+  console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
+  console.log(`⚡ Environment: ${process.env.NODE_ENV}`);
+});

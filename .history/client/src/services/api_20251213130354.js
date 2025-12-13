@@ -1,13 +1,7 @@
 // src/services/api.js
-// Auto-detect environment for API base URL
-const isProduction = window.location.hostname.includes('vercel.app');
-const API_BASE_URL = isProduction 
-  ? '/api'  // Relative path for Vercel production
-  : 'http://localhost:3001/api';  // Local development
+const API_BASE_URL = 'http://localhost:3000/api';
 
-console.log(`🌐 API Base URL: ${API_BASE_URL} (${isProduction ? 'Production' : 'Development'})`);
-
-// Helper function for API calls - NO OTHER CHANGES
+// Helper function for API calls
 const apiRequest = async (endpoint, method = 'GET', data = null, token = null) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -48,7 +42,7 @@ const apiRequest = async (endpoint, method = 'GET', data = null, token = null) =
   }
 };
 
-// API Services - NO CHANGES
+// API Services
 export const apiService = {
   // Health check
   healthCheck: () => apiRequest('/health'),
