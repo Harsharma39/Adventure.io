@@ -1,0 +1,848 @@
+/* Adventure Park Theme - Modern & Visual */
+:root {
+  --primary-red: #e63946;
+  --secondary-blue: #457b9d;
+  --dark-blue: #0f172a;
+  --light-blue: #a8dadc;
+  --cream: #f1faee;
+  --white: #ffffff;
+  --black: #000000;
+  --gray: #f5f5f5;
+  --light-gray: #1e293b;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Montserrat', 'Segoe UI', sans-serif;
+  color: var(--white);
+  background: var(--dark-blue);
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+/* Buttons */
+.btn {
+  padding: 16px 40px;
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.social-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.social-link:hover {
+  color: var(--primary-red);
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 20px 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo with clickable link */
+.logo-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.logo-link:hover {
+  transform: translateY(-2px);
+}
+
+.logo-link h1 {
+  font-size: 28px;
+  color: var(--white);
+  margin-bottom: 5px;
+  transition: color 0.3s ease;
+}
+
+.logo-link:hover h1 {
+  color: var(--primary-red);
+}
+
+.logo-dot {
+  color: var(--primary-red);
+}
+
+.logo-tagline {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+/* Navigation container */
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+/* Navigation on left side */
+.nav {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  position: relative;
+  padding: 10px 0;
+  transition: var(--transition);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--primary-red);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: var(--primary-red);
+  transition: var(--transition);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Book Now button on right */
+.btn-book-now {
+  background: var(--primary-red);
+  color: var(--white);
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-book-now:hover {
+  background: #d62839;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(230, 57, 70, 0.3);
+}
+
+/* Hero Section */
+.hero-section {
+  height: 100vh;
+  min-height: 800px;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.9));
+}
+
+.hero-overlay {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content {
+  text-align: center;
+  color: var(--white);
+  padding-top: 120px;
+}
+
+.hero-title {
+  font-size: 72px;
+  color: var(--white);
+  margin-bottom: 20px;
+  line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-highlight {
+  color: var(--primary-red);
+  font-size: 84px;
+  display: block;
+  margin-top: -10px;
+  text-shadow: 0 4px 20px rgba(230, 57, 70, 0.4);
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  color: var(--light-blue);
+  margin-bottom: 40px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  max-width: 800px;
+  margin: 0 auto 40px;
+  opacity: 0.9;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.btn-hero-primary {
+  background: var(--primary-red);
+  color: var(--white);
+  padding: 20px 50px;
+  font-size: 16px;
+}
+
+.btn-hero-primary:hover {
+  background: #d62839;
+}
+
+.btn-hero-secondary {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid var(--white);
+  padding: 20px 50px;
+  font-size: 16px;
+}
+
+.btn-hero-secondary:hover {
+  background: var(--white);
+  color: var(--dark-blue);
+}
+
+/* Section Divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  width: 80%;
+  margin: 0 auto 60px;
+}
+
+/* Featured Rides */
+.featured-rides {
+  padding: 120px 0 80px;
+  background: linear-gradient(180deg, var(--dark-blue) 0%, #1a2536 100%);
+  position: relative;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.section-title {
+  font-size: 42px;
+  color: var(--white);
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: var(--primary-red);
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  font-size: 18px;
+  color: var(--light-blue);
+  font-weight: 500;
+  opacity: 0.8;
+  margin-top: 25px;
+}
+
+.rides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin-top: 50px;
+}
+
+.ride-card {
+  height: 450px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ride-card:hover {
+  transform: translateY(-15px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(230, 57, 70, 0.3);
+}
+
+.ride-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+  position: relative;
+}
+
+.ride-card:hover .ride-image {
+  transform: scale(1.1);
+}
+
+.ride-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+  padding: 40px 30px 30px;
+  color: var(--white);
+  transform: translateY(20px);
+  transition: var(--transition);
+}
+
+.ride-card:hover .ride-overlay {
+  transform: translateY(0);
+}
+
+.ride-name {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: var(--white);
+}
+
+.ride-desc {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 300;
+  color: var(--light-blue);
+}
+
+/* More Rides Text */
+.more-rides-text {
+  text-align: center;
+  margin-top: 100px;
+  padding: 60px 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 25px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.more-rides-title {
+  font-size: 32px;
+  color: var(--white);
+  margin-bottom: 30px;
+}
+
+.more-rides-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  margin: 40px 0;
+}
+
+.rides-count {
+  text-align: center;
+  padding: 30px 50px;
+  background: rgba(230, 57, 70, 0.1);
+  border-radius: 20px;
+  border: 2px solid rgba(230, 57, 70, 0.3);
+  min-width: 200px;
+}
+
+.count-number {
+  display: block;
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--primary-red);
+  line-height: 1;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(230, 57, 70, 0.3);
+}
+
+.count-label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--light-blue);
+}
+
+.more-rides-description {
+  max-width: 600px;
+  font-size: 18px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: left;
+}
+
+.btn-view-all {
+  background: var(--primary-red);
+  color: var(--white);
+  padding: 18px 50px;
+  font-size: 16px;
+  margin-top: 40px;
+}
+
+.btn-view-all:hover {
+  background: #d62839;
+  transform: translateY(-3px);
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 120px 0;
+  background: linear-gradient(135deg, #1a2536 0%, var(--dark-blue) 100%);
+  text-align: center;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+}
+
+.cta-title {
+  font-size: 42px;
+  margin-bottom: 30px;
+  color: var(--white);
+  position: relative;
+  display: inline-block;
+}
+
+.cta-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: var(--primary-red);
+  border-radius: 2px;
+}
+
+.cta-text {
+  font-size: 20px;
+  margin-bottom: 50px;
+  opacity: 0.9;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--light-blue);
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.btn-cta-primary {
+  background: var(--primary-red);
+  color: var(--white);
+  padding: 20px 50px;
+  font-size: 16px;
+}
+
+.btn-cta-primary:hover {
+  background: #d62839;
+}
+
+.btn-cta-secondary {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid var(--white);
+  padding: 20px 50px;
+  font-size: 16px;
+}
+
+.btn-cta-secondary:hover {
+  background: var(--white);
+  color: var(--dark-blue);
+}
+
+/* Footer */
+.footer {
+  background: rgba(15, 23, 42, 0.95);
+  color: var(--white);
+  padding: 80px 0 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 80px;
+  margin-bottom: 60px;
+}
+
+.footer-logo h3 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: var(--white);
+}
+
+.footer-logo p {
+  color: var(--light-blue);
+  font-size: 14px;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.link-group h4 {
+  font-size: 14px;
+  color: var(--light-blue);
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.link-group a,
+.link-group p {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  margin-bottom: 12px;
+  font-size: 14px;
+  transition: var(--transition);
+}
+
+.link-group a:hover {
+  color: var(--primary-red);
+  padding-left: 5px;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.social-links {
+  display: flex;
+  gap: 30px;
+}
+
+.footer-legal {
+  text-align: right;
+}
+
+.footer-legal p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.legal-links {
+  display: flex;
+  gap: 20px;
+}
+
+.legal-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 12px;
+  transition: var(--transition);
+}
+
+.legal-links a:hover {
+  color: var(--primary-red);
+}
+
+/* Image Error Fallback */
+.image-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background: rgba(255, 0, 0, 0.7);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 10;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .hero-title {
+    font-size: 60px;
+  }
+  
+  .hero-highlight {
+    font-size: 70px;
+  }
+  
+  .more-rides-content {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 992px) {
+  .header-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .nav-container {
+    width: 100%;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .nav {
+    gap: 20px;
+  }
+  
+  .hero-title {
+    font-size: 48px;
+  }
+  
+  .hero-highlight {
+    font-size: 56px;
+  }
+  
+  .hero-subtitle {
+    font-size: 18px;
+  }
+  
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .more-rides-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+  }
+  
+  .more-rides-description {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 36px;
+  }
+  
+  .hero-highlight {
+    font-size: 42px;
+  }
+  
+  .hero-cta {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .section-title, .cta-title {
+    font-size: 32px;
+  }
+  
+  .rides-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .footer-links {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+  
+  .footer-legal {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 28px;
+  }
+  
+  .hero-highlight {
+    font-size: 32px;
+  }
+  
+  .btn {
+    padding: 14px 30px;
+    font-size: 12px;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .ride-card {
+    height: 300px;
+  }
+  
+  .more-rides-title {
+    font-size: 24px;
+  }
+  
+  .count-number {
+    font-size: 36px;
+  }
+  
+  .rides-count {
+    padding: 20px 30px;
+    min-width: 150px;
+  }
+  
+  .header-container {
+    padding: 0 20px;
+  }
+  
+  .nav {
+    gap: 10px;
+  }
+  
+  .nav-link {
+    font-size: 13px;
+  }
+  
+  .btn-book-now {
+    padding: 10px 20px;
+    font-size: 11px;
+  }
+}
