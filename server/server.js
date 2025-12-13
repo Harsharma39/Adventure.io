@@ -33,3 +33,30 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server running: http://localhost:${PORT}`);
 });
+
+// ============ SERVE REACT IN PRODUCTION ============
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  const fs = require('fs');
+  const buildPath = path.join(__dirname, '../client/build');
+  
+  if (fs.existsSync(buildPath)) {
+    const express = require('express');
+    app.use(express.static(buildPath));
+    
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(buildPath, 'index.html'));
+    });
+    console.log('✅ Serving React build');
+  }
+}
+
+// ============ VERCEL/LOCAL START ============
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`✅ Server: http://localhost:${PORT}`);
+  });
+}
