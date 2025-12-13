@@ -1,4 +1,3 @@
-// server/server.js - Updated for Vercel deployment
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -16,7 +15,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 // CORS Configuration
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
@@ -26,7 +24,7 @@ app.use(cors({
       'https://adventure-io.vercel.app',
       'https://adventure-io-harsharma39.vercel.app',
       'https://*.vercel.app'
-    ].filter(Boolean); // Remove undefined values
+    ].filter(Boolean);
     
     if (allowedOrigins.some(allowed => origin === allowed) || origin.endsWith('.vercel.app')) {
       callback(null, true);
@@ -52,18 +50,54 @@ mongoose.connect(process.env.MONGODB_URI, {
 if (isProduction) {
   console.log('🚀 Running in production mode');
   const buildPath = path.join(__dirname, '../client/build');
-  
-  // Check if React build exists
   const fs = require('fs');
+  
   if (fs.existsSync(buildPath)) {
     app.use(express.static(buildPath));
     console.log(`📁 Serving React build from: ${buildPath}`);
   } else {
-    console.log('⚠️ React build not found. Make sure to run: cd client && npm run build');
+    console.log('⚠️ React build not found.');
   }
 }
 
-// ==================== YOUR EXISTING CODE ====================
+// ==================== YOUR EXISTING ROUTES ====================
+
+// 1. Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    success: true,
+    message: '✅ Adventure.io API is running',
+    version: '1.0.0'
+  });
+});
+
+// 2. Test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'API endpoint is working!',
+    data: { timestamp: new Date().toISOString() }
+  });
+});
+
+// 3. Health endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    res.json({
+      success: true,
+      data: {
+        status: 'healthy',
+        database: dbStatus,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Health check failed' });
+  }
+});
+
+// ==================== ADD YOUR MISSING ROUTES HERE ====================
 
 // MongoDB Schemas
 const bookingSchema = new mongoose.Schema({
@@ -123,47 +157,6 @@ const generateBookingId = () => {
   const random = Math.random().toString(36).substr(2, 4).toUpperCase();
   return `ADV${timestamp}${random}`;
 };
-
-// Routes
-
-// 1. Health Check
-app.get('/', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-  
-  res.json({ 
-    success: true,
-    message: '✅ Adventure.io Backend API is running',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    vercel: isVercel,
-    platform: process.platform,
-    node: process.version,
-    database: dbStatus,
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-    apiBaseUrl: isVercel ? '/api' : `http://localhost:${process.env.PORT || 5000}/api`
-  });
-});
-
-// 2. Vercel Status Check
-app.get('/api/vercel-status', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Vercel serverless function is working',
-    serverless: true,
-    region: process.env.VERCEL_REGION || 'unknown',
-    lambda: true
-  });
-});
-
-// 3. Test Route
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'API endpoint is working!',
-    data: { timestamp: new Date().toISOString() }
-  });
-});
 
 // 4. User Registration
 app.post('/api/auth/register', async (req, res) => {
@@ -260,7 +253,28 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// 6. Create Booking (Protected)
+// 6. Check Email Availability
+app.get('/api/auth/check-email/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    const user = await User.findOne({ email });
+    
+    res.json({
+      success: true,
+      data: {
+        email,
+        available: !user
+      }
+    });
+    
+  } catch (error) {
+    console.error('Check email error:', error);
+    res.status(500).json({ error: 'Failed to check email' });
+  }
+});
+
+// 7. Create Booking
 app.post('/api/bookings', async (req, res) => {
   try {
     const {
@@ -295,10 +309,7 @@ app.post('/api/bookings', async (req, res) => {
     
     await booking.save();
     
-    console.log(`🎫 New booking created: ${bookingId}`);
-    console.log(`📧 Email to: ${email}`);
-    console.log(`📱 Phone: ${phone}`);
-    console.log(`💰 Amount: ₹${totalAmount}`);
+    console.log(`🎫 New booking: ${bookingId}`);
     
     res.status(201).json({
       success: true,
@@ -325,28 +336,8 @@ app.post('/api/bookings', async (req, res) => {
     console.error('Booking creation error:', error);
     res.status(500).json({ 
       success: false,
-      error: 'Failed to create booking',
-      details: error.message 
+      error: 'Failed to create booking'
     });
-  }
-});
-
-// 7. Get All Bookings (Protected - Admin)
-app.get('/api/bookings', authenticateToken, async (req, res) => {
-  try {
-    const bookings = await Booking.find().sort({ createdAt: -1 }).limit(100);
-    
-    res.json({
-      success: true,
-      data: {
-        bookings,
-        count: bookings.length
-      }
-    });
-    
-  } catch (error) {
-    console.error('Get bookings error:', error);
-    res.status(500).json({ error: 'Failed to fetch bookings' });
   }
 });
 
@@ -392,7 +383,26 @@ app.get('/api/user/bookings', authenticateToken, async (req, res) => {
   }
 });
 
-// 10. Update Booking Status (Protected - Admin)
+// 10. Get All Bookings (Protected - Admin)
+app.get('/api/bookings', authenticateToken, async (req, res) => {
+  try {
+    const bookings = await Booking.find().sort({ createdAt: -1 }).limit(100);
+    
+    res.json({
+      success: true,
+      data: {
+        bookings,
+        count: bookings.length
+      }
+    });
+    
+  } catch (error) {
+    console.error('Get bookings error:', error);
+    res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
+
+// 11. Update Booking Status (Protected - Admin)
 app.patch('/api/bookings/:bookingId/status', authenticateToken, async (req, res) => {
   try {
     const { bookingId } = req.params;
@@ -423,7 +433,7 @@ app.patch('/api/bookings/:bookingId/status', authenticateToken, async (req, res)
   }
 });
 
-// 11. Analytics Endpoint (Protected - Admin)
+// 12. Analytics Endpoint (Protected - Admin)
 app.get('/api/analytics/dashboard', authenticateToken, async (req, res) => {
   try {
     const totalBookings = await Booking.countDocuments();
@@ -453,52 +463,6 @@ app.get('/api/analytics/dashboard', authenticateToken, async (req, res) => {
   }
 });
 
-// 12. Check Email Availability
-app.get('/api/auth/check-email/:email', async (req, res) => {
-  try {
-    const { email } = req.params;
-    
-    const user = await User.findOne({ email });
-    
-    res.json({
-      success: true,
-      data: {
-        email,
-        available: !user
-      }
-    });
-    
-  } catch (error) {
-    console.error('Check email error:', error);
-    res.status(500).json({ error: 'Failed to check email' });
-  }
-});
-
-// 13. Health Check with DB
-app.get('/api/health', async (req, res) => {
-  try {
-    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-    
-    res.json({
-      success: true,
-      data: {
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        database: dbStatus,
-        uptime: process.uptime(),
-        memory: process.memoryUsage()
-      }
-    });
-    
-  } catch (error) {
-    console.error('Health check error:', error);
-    res.status(500).json({ 
-      success: false,
-      error: 'Health check failed' 
-    });
-  }
-});
-
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({
@@ -513,25 +477,18 @@ app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({
     success: false,
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    error: 'Internal server error'
   });
 });
 
 // ==================== VERCEL/LOCAL SERVER START ====================
 if (isVercel) {
-  // Vercel Serverless Mode
-  console.log('☁️ Running on Vercel Serverless Functions');
   module.exports = app;
 } else {
-  // Local Development Mode
   const PORT = process.env.PORT || 3001;
   app.listen(PORT, () => {
     console.log(`✅ Server successfully started on port ${PORT}`);
     console.log(`🌐 Open your browser to: http://localhost:${PORT}`);
     console.log(`📡 API Base URL: http://localhost:${PORT}/api`);
-    console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
-    console.log(`⚡ Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📁 Working directory: ${__dirname}`);
   });
 }

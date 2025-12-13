@@ -1,7 +1,0 @@
-.env
-*.env
-.env.local
-.env.development
-.env.production
-client/.env
-server/.env
