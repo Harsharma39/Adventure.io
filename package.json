@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd client && npm run build",
-    "start": "cd server && node server.js"
+    "start": "node server/server.js"
   },
   "engines": {
     "node": "24.x"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.22.1"
   }
 }
