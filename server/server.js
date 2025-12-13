@@ -1,85 +1,35 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
-// Enable CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  next();
-});
-
+app.use(cors());
 app.use(express.json());
 
-// Routes
+// API endpoints
 app.get('/', (req, res) => {
   res.json({ 
     success: true, 
-    message: '🚀 Adventure.io API',
-    endpoints: ['/api/test', '/api/health'],
-    timestamp: new Date().toISOString()
+    message: 'Adventure.io API',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
 app.get('/api/test', (req, res) => {
-  res.json({ success: true, message: 'API is working!' });
+  res.json({ success: true, message: 'API test working' });
 });
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, status: 'healthy' });
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running: http://localhost:${PORT}`);
-});
+// ============ VERCEL EXPORT ============
+// This is REQUIRED for Vercel
+module.exports = app;
 
-// ============ SERVE REACT IN PRODUCTION ============
-if (process.env.NODE_ENV === 'production') {
-  const path = require('path');
-  const fs = require('fs');
-  const buildPath = path.join(__dirname, '../client/build');
-  
-  if (fs.existsSync(buildPath)) {
-    const express = require('express');
-    app.use(express.static(buildPath));
-    
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(buildPath, 'index.html'));
-    });
-    console.log('✅ Serving React build');
-  }
-}
-
-// ============ VERCEL/LOCAL START ============
-if (process.env.VERCEL) {
-
-
-// ============ SERVE REACT BUILD ============
-if (process.env.NODE_ENV === 'production') {
-  const buildPath = path.join(__dirname, '../client/build');
-  
-  if (fs.existsSync(buildPath)) {
-    // Serve static files from React build
-    app.use(express.static(buildPath));
-    
-    // For any non-API route, serve React app
-    app.get('*', (req, res) => {
-      if (!req.path.startsWith('/api/')) {
-        res.sendFile(path.join(buildPath, 'index.html'));
-      }
-    });
-    
-    console.log('✅ Serving React frontend');
-  } else {
-    console.log('⚠️ React build not found at:', buildPath);
-  }
-}
-
-  module.exports = app;
-} else {
-  const PORT = process.env.PORT || 3001;
+// Local development only
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5001;
   app.listen(PORT, () => {
-    console.log(`✅ Server: http://localhost:${PORT}`);
+    console.log(`Local: http://localhost:${PORT}`);
   });
 }
