@@ -1,35 +1,40 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// ============ SERVE REACT ============
+// Always try to serve React files first
+const buildPath = path.join(__dirname, '../client/build');
 
-// Serve React in production
-if (process.env.NODE_ENV === 'production') {
-  const buildPath = path.join(__dirname, '../client/build');
-  if (fs.existsSync(buildPath)) {
-    app.use(express.static(buildPath));
-  }
+if (fs.existsSync(buildPath)) {
+  console.log('📁 Found React build at:', buildPath);
+  
+  // 1. Serve static files (CSS, JS, images)
+  app.use(express.static(buildPath));
+  
+  // 2. API endpoints (must come BEFORE the * route)
+  app.get('/api/test', (req, res) => {
+    res.json({ success: true, message: 'API test' });
+  });
+  
+  // 3. ALL OTHER ROUTES → React index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+  
+} else {
+  console.log('⚠️ No React build found at:', buildPath);
+  
+  // Fallback: just API
+  app.get('/', (req, res) => {
+    res.json({ error: 'React build not found' });
+  });
+  
+  app.get('/api/test', (req, res) => {
+    res.json({ success: true, message: 'API only' });
+  });
 }
 
-// API endpoints
-app.get('/api/test', (req, res) => {
-  res.json({ success: true, message: 'API test' });
-});
-
-// All routes → React
-app.get('*', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    const indexPath = path.join(__dirname, '../client/build/index.html');
-    if (fs.existsSync(indexPath) && !req.path.startsWith('/api/')) {
-      return res.sendFile(indexPath);
-    }
-  }
-  res.json({ success: true, message: 'API' });
-});
-
-// Vercel export
+// ============ VERCEL ============
 module.exports = app;
