@@ -53,6 +53,29 @@ if (process.env.NODE_ENV === 'production') {
 
 // ============ VERCEL/LOCAL START ============
 if (process.env.VERCEL) {
+
+
+// ============ SERVE REACT BUILD ============
+if (process.env.NODE_ENV === 'production') {
+  const buildPath = path.join(__dirname, '../client/build');
+  
+  if (fs.existsSync(buildPath)) {
+    // Serve static files from React build
+    app.use(express.static(buildPath));
+    
+    // For any non-API route, serve React app
+    app.get('*', (req, res) => {
+      if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(buildPath, 'index.html'));
+      }
+    });
+    
+    console.log('✅ Serving React frontend');
+  } else {
+    console.log('⚠️ React build not found at:', buildPath);
+  }
+}
+
   module.exports = app;
 } else {
   const PORT = process.env.PORT || 3001;
